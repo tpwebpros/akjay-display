@@ -1,6 +1,6 @@
 <script>
   import Player from "./Player.svelte";
-  export let players;
+  export let state;
 
   const colors = [
     "salmon",
@@ -20,7 +20,12 @@
 </style>
 
 <main class="board">
-  {#each players as player, i}
-    <Player {player} count={players.length} number={i} color={colors[i]} />
+  {#each state.players as player, i}
+    <Player
+      {player}
+      count={state.players.length}
+      number={i}
+      color={colors[i]}
+      maxScore={state.maxScore} />
   {/each}
 </main>
