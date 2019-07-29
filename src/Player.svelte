@@ -1,6 +1,7 @@
 <script>
   export let color;
   export let count;
+  export let gameOver;
   export let number;
   export let player;
   export let maxScore;
@@ -25,14 +26,24 @@
 <style>
   .player {
     flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
-  .umbrella {
-    background-image: url("media/umbrella-yellow.png");
+  .player .name {
+    margin: 0.5em;
+  }
+
+  .avatar {
+    transition: transformX 0.5s ease;
     width: 4em;
     height: 4em;
     display: block;
     position: relative;
+  }
+
+  .avatar.umbrella {
+    background-image: url("media/umbrella-yellow.png");
     background-size: 400%;
   }
 
@@ -56,11 +67,10 @@
 </style>
 
 <section class="player" style="background-color: {color}">
+  <span class="name">{player.name}</span>
   <span
-    class={player.avatar}
-    class:walking-0={walkSpeed === 0}
-    class:walking-1={walkSpeed === 1}
-    class:walking-2={walkSpeed === 2}
-    style="left: {scoreOffset(player.score)}" />
-  <span>{player.name}</span>
+    class={`avatar ${player.avatar}`}
+    class:walking-0={!gameOver && walkSpeed === 0}
+    class:walking-1={!gameOver && walkSpeed === 1}
+    class:walking-2={!gameOver && walkSpeed === 2}
 </section>

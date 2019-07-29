@@ -1,6 +1,8 @@
 <script>
-  export let name;
   import Board from "./Board.svelte";
+
+  let title = "Waiting for game";
+
   let state = {
     maxScore: 100,
     players: [
@@ -12,13 +14,27 @@
     ]
   };
 
+  function gameWinner(state) {
+    return state.players.reduce((winner, p) => {
+      if (p.score >= state.maxScore) {
+        if (!winner || p.score > winner.score) {
+          return p;
+        } else {
+          return undefined;
+        }
+      } else {
+        return winner;
+      }
+    }, undefined);
+  }
+
   function randomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  setInterval(() => {
+  let scoreChecker = setInterval(() => {
     const players = state.players.map(p => {
-      const posNeg = randomInt(2) === 1 ? 1 : -1;
+      const posNeg = randomInt(2) === 1 ? 1 : -0.5;
       const amount = randomInt(20) * posNeg;
       return {
         ...p,
@@ -26,9 +42,22 @@
       };
     });
 
-    state = { ...state, players };
-    console.log(state);
+    update({ ...state, players });
   }, 1000);
+
+  function update(newState) {
+    let winner = gameWinner(newState);
+
+    if (winner) {
+      title = `Winner: ${winner.name}, ${winner.score} points`;
+      clearInterval(scoreChecker);
+      newState.gameOver = true;
+    } else {
+      title = "Game on";
+    }
+
+    state = newState;
+  }
 </script>
 
 <style>
@@ -37,6 +66,6 @@
   }
 </style>
 
-<h1>Hello {name}!</h1>
+<h1>{title}</h1>
 
 <Board {state} />
