@@ -14,10 +14,12 @@
     return Math.round((score / maxScore) * 100);
   }
 
-  function scoreOffset(score) {
-    const ems = 4;
-    const offsetForWidth = (score / 100) * ems;
-    return `calc(${score}% - ${offsetForWidth}em)`;
+  function translateX(score) {
+    const width = 4;
+    const margin = 1;
+    const offsetForWidth = (score / 100) * width;
+    const offsetForMargin = (score / 100) * margin;
+    return `calc(${score}vw - ${offsetForMargin}em - ${offsetForWidth}em)`;
   }
 
   const walkSpeed = randomInt(3);
@@ -73,4 +75,5 @@
     class:walking-0={!gameOver && walkSpeed === 0}
     class:walking-1={!gameOver && walkSpeed === 1}
     class:walking-2={!gameOver && walkSpeed === 2}
+    style={`transform: translateX(${translateX(player.score, maxScore)});`} />
 </section>
