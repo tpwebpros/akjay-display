@@ -6,7 +6,7 @@
   let state = {
     maxScore: 100,
     players: [
-      { name: "alice", avatar: "umbrella", score: 40 },
+      { name: "alice", avatar: "cactus", score: 40 },
       { name: "bob", avatar: "umbrella", score: 30 },
       { name: "charlie", avatar: "umbrella", score: 0 },
       { name: "dot", avatar: "umbrella", score: 75 },

@@ -16,13 +16,11 @@
 
   function translateX(score) {
     const width = 4;
-    const margin = 1;
+    const margin = 2;
     const offsetForWidth = (score / 100) * width;
     const offsetForMargin = (score / 100) * margin;
     return `calc(${score}vw - ${offsetForMargin}em - ${offsetForWidth}em)`;
   }
-
-  const walkSpeed = randomInt(3);
 </script>
 
 <style>
@@ -33,47 +31,37 @@
   }
 
   .player .name {
-    margin: 0.5em;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+  }
+
+  .marker {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    text-align: center;
+    transition: transform 0.5s ease-out;
+    width: 4rem;
   }
 
   .avatar {
-    transition: transformX 0.5s ease;
-    width: 4em;
-    height: 4em;
-    display: block;
-    position: relative;
+    font-size: 4rem;
   }
 
-  .avatar.umbrella {
-    background-image: url("media/umbrella-yellow.png");
-    background-size: 400%;
-  }
-
-  .walking-0 {
-    animation: walk 0.5s steps(3) infinite;
-  }
-
-  .walking-1 {
-    animation: walk 0.6s steps(3) infinite;
-  }
-
-  .walking-2 {
-    animation: walk 0.7s steps(3) infinite;
-  }
-
-  @keyframes walk {
-    to {
-      background-position: 100% 0;
-    }
+  .score {
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
   }
 </style>
 
 <section class="player" style="background-color: {color}">
-  <span class="name">{player.name}</span>
+  <span class="name">{player.name} ({number} of {count})</span>
   <span
-    class={`avatar ${player.avatar}`}
-    class:walking-0={!gameOver && walkSpeed === 0}
-    class:walking-1={!gameOver && walkSpeed === 1}
-    class:walking-2={!gameOver && walkSpeed === 2}
-    style={`transform: translateX(${translateX(player.score, maxScore)});`} />
+    class="marker"
+    style="transform: translateX({translateX(player.score, maxScore)};">
+    <span class="avatar ec ec-{player.avatar}" />
+    <span class="score">{player.score}</span>
+  </span>
 </section>
