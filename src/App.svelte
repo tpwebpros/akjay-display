@@ -6,11 +6,11 @@
   let state = {
     maxScore: 100,
     players: [
-      { name: "alice", avatar: "mushroom", score: 40 },
-      { name: "bob", avatar: "squid", score: 30 },
+      { name: "alice", avatar: "mushroom", score: 0 },
+      { name: "bob", avatar: "squid", score: 0 },
       { name: "charlie", avatar: "taco", score: 0 },
-      { name: "dot", avatar: "cactus", score: 75 },
-      { name: "ev", avatar: "owl", score: 50 }
+      { name: "dot", avatar: "cactus", score: 0 },
+      { name: "ev", avatar: "owl", score: 0 }
     ]
   };
 
@@ -41,7 +41,7 @@
 
   let scoreChecker = setInterval(() => {
     const players = state.players.map(p => {
-      const posNeg = randomInt(2) === 1 ? 1 : -0.5;
+      const posNeg = randomInt(4) > 0 ? 1 : -0.5;
       const amount = randomInt(20) * posNeg;
       return {
         ...p,
