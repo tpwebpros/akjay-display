@@ -31,9 +31,10 @@
   }
 
   .player .name {
+    color: #333;
     font-size: 1.2rem;
     font-weight: 700;
-    color: #333;
+    margin: 0.4rem;
   }
 
   .marker {
@@ -57,7 +58,7 @@
 </style>
 
 <section class="player" style="background-color: {color}">
-  <span class="name">{player.name} ({number} of {count})</span>
+  <span class="name">{player.name}</span>
   <span
     class="marker"
     style="transform: translateX({translateX(player.score, maxScore)};">

@@ -6,26 +6,33 @@
   let state = {
     maxScore: 100,
     players: [
-      { name: "alice", avatar: "cactus", score: 40 },
-      { name: "bob", avatar: "umbrella", score: 30 },
-      { name: "charlie", avatar: "umbrella", score: 0 },
-      { name: "dot", avatar: "umbrella", score: 75 },
-      { name: "ev", avatar: "umbrella", score: 50 }
+      { name: "alice", avatar: "mushroom", score: 40 },
+      { name: "bob", avatar: "squid", score: 30 },
+      { name: "charlie", avatar: "taco", score: 0 },
+      { name: "dot", avatar: "cactus", score: 75 },
+      { name: "ev", avatar: "owl", score: 50 }
     ]
   };
 
-  function gameWinner(state) {
-    return state.players.reduce((winner, p) => {
-      if (p.score >= state.maxScore) {
-        if (!winner || p.score > winner.score) {
-          return p;
-        } else {
-          return undefined;
+  function gameWinners(state) {
+    return state.players.reduce(
+      (best, p) => {
+        if (p.score < state.maxScore) {
+          return best;
         }
-      } else {
-        return winner;
-      }
-    }, undefined);
+
+        if (p.score > best.score) {
+          return { score: p.score, players: [p] };
+        }
+
+        if (p.score === best.score) {
+          return { score: best.score, players: [...best.players, p] };
+        }
+
+        return best;
+      },
+      { score: 0, players: [] }
+    );
   }
 
   function randomInt(max) {
@@ -46,10 +53,15 @@
   }, 1000);
 
   function update(newState) {
-    let winner = gameWinner(newState);
+    let winning = gameWinners(newState);
 
-    if (winner) {
-      title = `Winner: ${winner.name}, ${winner.score} points`;
+    const winnerCount = winning.players.length;
+
+    if (winnerCount > 0) {
+      const label = winnerCount > 1 ? "Winners" : "Winner";
+      title = `${label}: ${winning.players.map(p => p.name).join(", ")}, ${
+        winning.score
+      } points`;
       clearInterval(scoreChecker);
       newState.gameOver = true;
     } else {
@@ -62,7 +74,7 @@
 
 <style>
   h1 {
-    color: purple;
+    color: #333;
   }
 </style>
 

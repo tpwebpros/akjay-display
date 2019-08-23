@@ -25,7 +25,7 @@
       {player}
       count={state.players.length}
       number={i}
-      color={colors[i]}
+      color={colors[i % colors.length]}
       maxScore={state.maxScore}
       gameOver={state.gameOver} />
   {/each}
