@@ -19,7 +19,7 @@
   }
 </style>
 
-<main class="board">
+<div class="board">
   {#each state.players as player, i}
     <Player
       {player}
@@ -29,4 +29,4 @@
       maxScore={state.maxScore}
       gameOver={state.gameOver} />
   {/each}
-</main>
+</div>
