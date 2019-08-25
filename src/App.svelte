@@ -1,8 +1,9 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, beforeUpdate } from "svelte";
 
   import Board from "./Board.svelte";
   import GamePicker from "./GamePicker.svelte";
+  import GameInstancePicker from "./GameInstancePicker.svelte";
   import Client from "./client";
   import router from "./router";
   import { currentRoute } from "./stores";
@@ -12,6 +13,10 @@
   let client = new Client(server);
 
   let title = "Waiting for game";
+
+  let route;
+  let data;
+  let component;
 
   let state = {
     maxScore: 100,
@@ -76,9 +81,9 @@
   };
 
   if (server.url) {
-    setInterval(() => {
-      checkScore(server);
-    }, 1000);
+    // setInterval(() => {
+    //   checkScore(server);
+    // }, 1000);
   } else {
     setInterval(randomUpdate, 1000);
   }
@@ -102,6 +107,13 @@
     state = newState;
   }
 
+  beforeUpdate(() => {
+    route = router.match($currentRoute);
+    data = route ? route.data : {};
+    component = route ? route.component : router.home.component;
+    console.log({ route, component, data });
+  });
+
   onMount(() => {
     currentRoute.set(window.location.pathname);
 
@@ -122,5 +134,9 @@
 <svelte:window on:popstate={handleBackNavigation} />
 
 <main>
-  <svelte:component this={router[$currentRoute]} {client} />
+  {#if component === GameInstancePicker}
+    <svelte:component this={GameInstancePicker} {client} gameId={data} />
+  {:else}
+    <svelte:component this={component} {client} />
+  {/if}
 </main>

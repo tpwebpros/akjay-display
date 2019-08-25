@@ -1,4 +1,6 @@
 <script>
+  import Link from "./Link.svelte";
+
   export let client;
 
   let games = [];
@@ -7,6 +9,9 @@
     games = response.data;
     console.log(response);
   });
+
+  // Pick game -> List instances -> Create team (post to /teams) -> Play game
+  // Answered questions stored on team record
 </script>
 
 <style>
@@ -19,8 +24,8 @@
 
 <ul>
   {#each games as game}
-    <a href="#">
-      <li class="game">{game.name}</li>
-    </a>
+    <li>
+      <Link page={{ path: `/games/${game.RowKey}`, title: game.name }} />
+    </li>
   {/each}
 </ul>

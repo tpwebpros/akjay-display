@@ -12,12 +12,29 @@ export default class Client {
     url.pathname = url.pathname + path;
     url.searchParams.set("code", this.server.accessCode);
 
+    Object.entries(options.params || []).forEach(({
+      key,
+      value
+    }) => {
+      url.searchParams.set(key, value);
+    });
+
     try {
       const response = await fetch(url, {
         mode: "cors"
       });
+
+      if (response.status !== 200) {
+        console.error(`get ${url} status=${response.status}`)
+        return {}
+      }
+
+      console.log({
+        url,
+        response
+      });
       const json = await response.json();
-      console.log(json);
+
       return json
     } catch (err) {
       console.error(err);
@@ -33,6 +50,10 @@ export default class Client {
   }
 
   async getGameInstances(gameId) {
-    return this.get(`/games/${gameId}/instances`);
+    return this.get(`/gameinstances`, {
+      params: {
+        gameId
+      }
+    });
   }
 }

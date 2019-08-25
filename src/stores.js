@@ -2,4 +2,4 @@ import {
   writable
 } from "svelte/store";
 
-export const currentRoute = writable("/home")
+export const currentRoute = writable("/")
