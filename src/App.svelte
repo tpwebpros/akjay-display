@@ -127,7 +127,7 @@
   });
 
   function handleBackNavigation(event) {
-    curRoute.set(event.state.path);
+    currentRoute.set(event.state.path);
   }
 </script>
 
