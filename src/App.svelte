@@ -4,19 +4,27 @@
   import Board from "./Board.svelte";
   import GamePicker from "./GamePicker.svelte";
   import GameInstancePicker from "./GameInstancePicker.svelte";
+  import JoinGame from "./JoinGame.svelte";
+  import PlayGame from "./PlayGame.svelte";
   import Client from "./client";
-  import router from "./router";
+  import Router, { redirect } from "./router";
   import { currentRoute } from "./stores";
 
   export let server;
 
   let client = new Client(server);
 
+  const router = new Router({
+    "/": GamePicker,
+    "/games": GamePicker,
+    "/game/:gameId": GameInstancePicker,
+    "/join/:gameInstanceId": JoinGame,
+    "/play/:teamId": PlayGame
+  });
+
   let title = "Waiting for game";
 
   let route;
-  let data;
-  let component;
 
   let state = {
     maxScore: 100,
@@ -30,8 +38,6 @@
   };
 
   let games = [];
-
-  console.log({ server, state });
 
   function gameWinners(state) {
     return state.players.reduce(
@@ -108,10 +114,12 @@
   }
 
   beforeUpdate(() => {
-    route = router.match($currentRoute);
-    data = route ? route.data : {};
-    component = route ? route.component : router.home.component;
-    console.log({ route, component, data });
+    const match = router.match($currentRoute);
+    if (match) {
+      route = match;
+    } else {
+      redirect("/");
+    }
   });
 
   onMount(() => {
@@ -134,9 +142,15 @@
 <svelte:window on:popstate={handleBackNavigation} />
 
 <main>
-  {#if component === GameInstancePicker}
-    <svelte:component this={GameInstancePicker} {client} gameId={data} />
+  {#if route.component === GameInstancePicker}
+    <svelte:component this={GameInstancePicker} {client} gameId={route.data} />
+  {:else if route.component === JoinGame}
+    <svelte:component
+      this={JoinGame}
+      {client}
+      {router}
+      gameInstanceId={route.data} />
   {:else}
-    <svelte:component this={component} {client} />
+    <svelte:component this={route.component} {client} />
   {/if}
 </main>

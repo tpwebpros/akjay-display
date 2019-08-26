@@ -17,7 +17,7 @@
   }
 </style>
 
-<h1>Pick a game</h1>
+<h1>Join a game</h1>
 
 <ul>
   {#each instances as instance}

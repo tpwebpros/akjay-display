@@ -7,17 +7,23 @@ export default class Client {
     this.server = server
   }
 
-  async get(path, options = {}) {
+  url(path, params) {
     const url = new URL(this.server.url);
     url.pathname = url.pathname + path;
     url.searchParams.set("code", this.server.accessCode);
 
-    Object.entries(options.params || []).forEach(({
+    Object.entries(params).forEach(({
       key,
       value
     }) => {
       url.searchParams.set(key, value);
     });
+
+    return url
+  }
+
+  async get(path, options = {}) {
+    const url = this.url(path, options.params || {});
 
     try {
       const response = await fetch(url, {
@@ -29,13 +35,30 @@ export default class Client {
         return {}
       }
 
-      console.log({
-        url,
-        response
-      });
       const json = await response.json();
 
       return json
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async post(path, options = {}) {
+    const url = this.url(path, {});
+
+    try {
+      const response = await fetch(url, {
+        body: JSON.stringify(options.params || {}),
+        method: "POST",
+        mode: "cors",
+      });
+
+      if (response.status < 200 || response.status > 299) {
+        console.error(`post ${url} status=${response.status}`)
+        return {}
+      }
+
+      return await response.json();
     } catch (err) {
       console.error(err);
     }
@@ -55,5 +78,22 @@ export default class Client {
         gameId
       }
     });
+  }
+
+  async getGameInstance(gameInstanceId) {
+    return this.get(`/gameinstances/${gameInstanceId}`);
+  }
+
+  async createTeam({
+    name,
+    avatar,
+    gameInstanceId
+  }) {
+    return this.post(`/teams`, {
+      params: {
+        name,
+        instanceId: gameInstanceId
+      }
+    })
   }
 }

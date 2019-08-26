@@ -1,16 +1,9 @@
 <script>
-  import { currentRoute } from "./stores.js";
-
+  import { redirect } from "./router";
   export let page = { path: "/", title: "Home" };
 
-  function redirect(event) {
-    currentRoute.set(event.target.pathname);
-
-    window.history.pushState(
-      { path: page.path },
-      "",
-      window.location.origin + page.path
-    );
+  function handleClick(event) {
+    redirect(event.target.pathname);
   }
 </script>
 
@@ -18,4 +11,4 @@
 
 </style>
 
-<a href={page.path} on:click|preventDefault={redirect}>{page.title}</a>
+<a href={page.path} on:click|preventDefault={handleClick}>{page.title}</a>

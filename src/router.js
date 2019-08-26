@@ -1,64 +1,77 @@
-// import Home from './Home.svelte';
-// import About from './About.svelte';
-import GamePicker from "./GamePicker.svelte";
-import GameInstancePicker from "./GameInstancePicker.svelte";
+import {
+  currentRoute
+} from "./stores";
 
-const routes = {
-  "/": GamePicker,
-  "/games": GamePicker,
-  "/game/:gameId": GameInstancePicker
-}
+export default class Router {
+  constructor(routes) {
+    this.routes = routes;
+  }
 
-function match(route) {
-  const exact = Object.keys(routes).find(knownRoute => {
-    console.log({
-      route,
-      knownRoute
-    })
-    if (route === knownRoute) {
-      return true
-    }
-  });
+  default () {
+    let root = "/";
+    let path = this.routes[root] ? root : Object.keys(this.routes)[0];
 
-  if (exact) {
     return {
-      path: route,
-      component: routes[exact],
+      path,
+      component: this.routes[path],
       data: {}
     }
   }
 
-  const match = route.match(/^\/games\/([\w-]+)$/)
-  if (match) {
-    return {
-      path: route,
-      component: routes["/game/:gameId"],
-      data: match[1]
+  match(route) {
+    const exact = Object.keys(this.routes).find(knownRoute => {
+      if (route === knownRoute) {
+        return true
+      }
+    });
+
+    if (exact) {
+      return {
+        path: route,
+        component: this.routes[exact],
+        data: {}
+      }
+    }
+
+    let match = route.match(/^\/games\/([\w-]+)$/)
+    if (match) {
+      return {
+        path: route,
+        component: this.routes["/game/:gameId"],
+        data: match[1]
+      }
+    }
+
+    match = route.match(/^\/join\/([\w-]+)$/)
+    if (match) {
+      return {
+        path: route,
+        component: this.routes["/join/:gameInstanceId"],
+        data: match[1]
+      }
+    }
+
+    match = route.match(/^\/play\/([\w-]+)$/)
+    if (match) {
+      return {
+        path: route,
+        component: this.routes["/play/:teamId"],
+        data: match[1]
+      }
     }
   }
 }
 
-export const router = {
-  home: () => {
-    return {
-      path: "/",
-      component: GamePicker
-    }
-  },
-  games: () => {
-    return {
-      path: "/games",
-      component: GamePicker
-    }
-  },
-  game: (id) => {
-    return {
-      path: `/games/${gameid}`,
-      component: GameInstancePicker
-    }
-  },
+export function redirect(path, params = {}) {
+  let searchParams = new URLSearchParams(params);
+  let pathWithParams = searchParams.keys.length > 0 ? `${path}?${searchParams.toString()}` : path;
 
-  match,
+  currentRoute.set(pathWithParams);
+
+  window.history.pushState({
+      pathWithParams
+    },
+    "",
+    window.location.origin + pathWithParams
+  );
 }
-
-export default router;
