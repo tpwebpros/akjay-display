@@ -1,4 +1,4 @@
-import { writable } from "svelte/store"
+import { clearFlash } from "./stores"
 
 export default class Client {
   constructor(server) {
@@ -18,6 +18,7 @@ export default class Client {
   }
 
   async get(path, options = {}) {
+    clearFlash()
     const url = this.url(path, options.params || {})
 
     try {
@@ -39,6 +40,7 @@ export default class Client {
   }
 
   async post(path, options = {}) {
+    clearFlash()
     const url = this.url(path, {})
 
     try {
