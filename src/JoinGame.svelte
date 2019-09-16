@@ -15,7 +15,7 @@
       const params = { name, avatar, gameInstanceId };
       const response = await client.createTeam(params);
       const teamId = response.newId;
-      redirect("/play", { teamId });
+      redirect(`/play/${teamId}`);
     } catch (err) {
       $flashError = err.message;
     }

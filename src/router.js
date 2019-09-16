@@ -61,9 +61,15 @@ export default class Router {
 }
 
 export function redirect(path, params = {}) {
-  let searchParams = new URLSearchParams(params)
-  let pathWithParams = searchParams.keys.length > 0 ? `${path}?${searchParams.toString()}` : path
+  let searchParams = new URLSearchParams()
 
+  for (const key in params) {
+    searchParams.append(key, params[key])
+  }
+
+  const queryString = searchParams.toString()
+
+  let pathWithParams = queryString.length > 0 ? `${path}?${queryString}` : path
   currentRoute.set(pathWithParams)
 
   window.history.pushState(

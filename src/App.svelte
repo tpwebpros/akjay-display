@@ -119,19 +119,16 @@
     if (match) {
       route = match;
     } else {
-      redirect("/");
+      alert(`Not found: ${$currentRoute}`);
     }
   });
 
   onMount(() => {
-    currentRoute.set(window.location.pathname);
+    const path = window.location.pathname;
+    currentRoute.set(path);
 
     if (!history.state) {
-      window.history.replaceState(
-        { path: window.location.pathname },
-        "",
-        window.location.href
-      );
+      window.history.replaceState({ path }, "", window.location.href);
     }
   });
 
@@ -152,6 +149,8 @@
       {client}
       {router}
       gameInstanceId={route.data} />
+  {:else if route.component === PlayGame}
+    <svelte:component this={PlayGame} {client} {router} teamId={route.data} />
   {:else}
     <svelte:component this={route.component} {client} />
   {/if}
