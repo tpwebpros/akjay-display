@@ -67,15 +67,13 @@ export default class Client {
     switch (response.status) {
       case 404:
         message = "Not found"
-    }
-
-    try {
-      if (response.body.length > 0) {
-        const json = await response.json()
-        message = json.message
-      }
-    } catch (err) {
-      console.error(err)
+      default:
+        try {
+          const json = await response.json()
+          message = json.message
+        } catch (err) {
+          console.error(err)
+        }
     }
 
     return Promise.reject(new Error(message))
