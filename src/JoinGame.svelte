@@ -1,5 +1,6 @@
 <script>
   import { redirect } from "./router";
+  import { flashError } from "./stores";
 
   export let client;
   export let gameInstanceId;
@@ -9,11 +10,15 @@
   let avatar = "";
   let avatars = ["mushroom", "squid", "taco", "cactus", "owl"];
 
-  function handleSubmit() {
-    client.createTeam({ name, avatar, gameInstanceId }).then(response => {
+  async function handleSubmit() {
+    try {
+      const params = { name, avatar, gameInstanceId };
+      const response = await client.createTeam(params);
       const teamId = response.newId;
       redirect("/play", { teamId });
-    });
+    } catch (err) {
+      $flashError = err.message;
+    }
   }
 </script>
 
