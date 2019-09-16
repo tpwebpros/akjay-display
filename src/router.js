@@ -1,15 +1,13 @@
-import {
-  currentRoute
-} from "./stores";
+import { currentRoute } from "./stores"
 
 export default class Router {
   constructor(routes) {
-    this.routes = routes;
+    this.routes = routes
   }
 
-  default () {
-    let root = "/";
-    let path = this.routes[root] ? root : Object.keys(this.routes)[0];
+  default() {
+    let root = "/"
+    let path = this.routes[root] ? root : Object.keys(this.routes)[0]
 
     return {
       path,
@@ -23,7 +21,7 @@ export default class Router {
       if (route === knownRoute) {
         return true
       }
-    });
+    })
 
     if (exact) {
       return {
@@ -63,15 +61,16 @@ export default class Router {
 }
 
 export function redirect(path, params = {}) {
-  let searchParams = new URLSearchParams(params);
-  let pathWithParams = searchParams.keys.length > 0 ? `${path}?${searchParams.toString()}` : path;
+  let searchParams = new URLSearchParams(params)
+  let pathWithParams = searchParams.keys.length > 0 ? `${path}?${searchParams.toString()}` : path
 
-  currentRoute.set(pathWithParams);
+  currentRoute.set(pathWithParams)
 
-  window.history.pushState({
-      pathWithParams
+  window.history.pushState(
+    {
+      path: pathWithParams
     },
     "",
     window.location.origin + pathWithParams
-  );
+  )
 }
