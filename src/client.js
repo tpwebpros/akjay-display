@@ -27,8 +27,7 @@ export default class Client {
       })
 
       if (response.status !== 200) {
-        console.error(`get ${url} status=${response.status}`)
-        return {}
+        return this.handleErrorResponse(response)
       }
 
       const json = await response.json()
@@ -36,6 +35,7 @@ export default class Client {
       return json
     } catch (err) {
       console.error(err)
+      return Promise.reject(err)
     }
   }
 
@@ -51,16 +51,7 @@ export default class Client {
       })
 
       if (response.status > 299) {
-        var message = "An error occurred"
-
-        try {
-          const json = await response.json()
-          message = json.message
-        } catch (err) {
-          console.error(err)
-        }
-
-        return Promise.reject(new Error(message))
+        return this.handleErrorResponse(response)
       }
 
       return await response.json()
@@ -68,6 +59,30 @@ export default class Client {
       console.error(err)
       return Promise.reject(err)
     }
+  }
+
+  async handleErrorResponse(response) {
+    var message = "An error occurred"
+
+    switch (response.status) {
+      case 404:
+        message = "Not found"
+    }
+
+    try {
+      if (response.body.length > 0) {
+        const json = await response.json()
+        message = json.message
+      }
+    } catch (err) {
+      console.error(err)
+    }
+
+    return Promise.reject(new Error(message))
+  }
+
+  async getTeam(teamId) {
+    return this.get(`/teams/${teamId}`)
   }
 
   async getTeams() {
