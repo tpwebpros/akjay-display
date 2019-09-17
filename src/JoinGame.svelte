@@ -1,6 +1,8 @@
 <script>
+  import { onMount } from "svelte";
   import { redirect } from "./router";
   import { flashError } from "./stores";
+  import Team from "./Team.svelte";
 
   export let client;
   export let gameId;
@@ -10,8 +12,17 @@
   let name = "";
   let avatar = "";
   let avatars = ["mushroom", "squid", "taco", "cactus", "owl"];
+  let teams = {};
+  let assumedTeamId;
+  $: assumedTeam = currentAssumedTeam(assumedTeamId);
 
-  async function handleSubmit() {
+  function currentAssumedTeam(id) {
+    if (id != null) {
+      return teams[id];
+    }
+  }
+
+  async function handleCreateTeam() {
     try {
       const params = { name, avatar, gameInstanceId };
       const response = await client.createTeam(params);
@@ -21,6 +32,30 @@
       $flashError = err.message;
     }
   }
+
+  async function handlePlayTeam() {
+    try {
+      redirect(`/play/${assumedTeamId}`, { gameInstanceId, gameId });
+    } catch (err) {
+      $flashError = err.message;
+    }
+  }
+
+  onMount(async () => {
+    try {
+      const response = await client.getGameInstance(gameInstanceId);
+      console.log(response);
+      if (Array.isArray(response.teams)) {
+        teams = response.teams.reduce((acc, team) => {
+          acc[team.RowKey] = team;
+          return acc;
+        }, {});
+      }
+    } catch (err) {
+      console.log(err);
+      $flashError = err.message;
+    }
+  });
 </script>
 
 <style>
@@ -28,28 +63,63 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  .choices {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+  }
+
+  .separator {
+    margin: 3em 1em;
+  }
 </style>
 
-<h1>Create a team</h1>
+<h1>Join the game</h1>
 
-<div class="create-team">
-  <form on:submit|preventDefault={handleSubmit}>
-    <label for="name">Team name</label>
-    <input type="text" name="name" bind:value={name} />
+<div class="choices">
+  <div class="create-team">
+    <h2>Create a team</h2>
+    <form on:submit|preventDefault={handleCreateTeam}>
+      <label for="name">Team name</label>
+      <input type="text" name="name" bind:value={name} />
 
-    <label for="avatar">Avatar</label>
-    <select name="avatar" bind:value={avatar}>
-      <option selected />
-      {#each avatars as a}
-        <option value={a}>{a}</option>
-      {/each}
-    </select>
+      <label for="avatar">Avatar</label>
+      <select name="avatar" bind:value={avatar}>
+        <option selected />
+        {#each avatars as a}
+          <option value={a}>{a}</option>
+        {/each}
+      </select>
 
-    <button disabled={!name || !avatar} type="submit">Create team</button>
-  </form>
+      <button disabled={!name || !avatar} type="submit">Create team</button>
+    </form>
 
-  <div class="preview">
-    <p>Name: {name}</p>
-    <p>Avatar: {avatar}</p>
+    <div class="preview">
+      <Team {name} {avatar} />
+    </div>
+  </div>
+
+  <div class="separator">or</div>
+
+  <div>
+    <h2>Play an existing team</h2>
+    <form on:submit|preventDefault={handlePlayTeam}>
+      <select bind:value={assumedTeamId}>
+        <option selected />
+        {#each Object.values(teams) as team}
+          <option value={team.RowKey}>{team.name}</option>
+        {/each}
+      </select>
+
+      <button disabled={!assumedTeamId} type="submit">Play with team</button>
+
+    </form>
+
+    <div class="preview">
+      {#if assumedTeam}
+        <Team name={assumedTeam.name} avatar={assumedTeam.avatar} />
+      {/if}
+    </div>
   </div>
 </div>
