@@ -11,7 +11,21 @@
 
   let name = "";
   let avatar = "";
-  let avatars = ["mushroom", "squid", "taco", "cactus", "owl"];
+  let avatars = [
+    "avocado",
+    "cactus",
+    "crab",
+    "metal",
+    "mushroom",
+    "owl",
+    "pizza",
+    "robot",
+    "rocket",
+    "squid",
+    "sushi",
+    "taco",
+    "unicorn"
+  ];
   let teams = {};
   let assumedTeamId;
   $: assumedTeam = currentAssumedTeam(assumedTeamId);
