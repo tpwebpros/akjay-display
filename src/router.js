@@ -1,4 +1,5 @@
 import { currentRoute } from "./stores"
+import NotFound from "./NotFound.svelte"
 
 export default class Router {
   constructor(routes) {
@@ -75,6 +76,12 @@ export default class Router {
         component: this.routes["/board/:gameInstanceId"],
         data: match[1]
       }
+    }
+
+    return {
+      path,
+      component: NotFound,
+      data: {}
     }
   }
 }
