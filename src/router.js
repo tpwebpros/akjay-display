@@ -57,6 +57,15 @@ export default class Router {
         data: match[1]
       }
     }
+
+    match = route.match(/^\/board\/([\w-]+)$/)
+    if (match) {
+      return {
+        path: route,
+        component: this.routes["/board/:gameInstanceId"],
+        data: match[1]
+      }
+    }
   }
 }
 

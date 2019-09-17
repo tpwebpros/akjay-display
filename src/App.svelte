@@ -20,7 +20,8 @@
     "/games": GamePicker,
     "/game/:gameId": GameInstancePicker,
     "/join/:gameInstanceId": JoinGame,
-    "/play/:teamId": PlayGame
+    "/play/:teamId": PlayGame,
+    "/board/:gameInstanceId": Board
   });
 
   let title = "Waiting for game";
@@ -39,80 +40,6 @@
   };
 
   let games = [];
-
-  function gameWinners(state) {
-    return state.players.reduce(
-      (best, p) => {
-        if (p.score < state.maxScore) {
-          return best;
-        }
-
-        if (p.score > best.score) {
-          return { score: p.score, players: [p] };
-        }
-
-        if (p.score === best.score) {
-          return { score: best.score, players: [...best.players, p] };
-        }
-
-        return best;
-      },
-      { score: 0, players: [] }
-    );
-  }
-
-  function randomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-  }
-
-  let randomUpdate = () => {
-    const players = state.players.map(p => {
-      const posNeg = randomInt(4) > 0 ? 1 : -0.5;
-      const amount = randomInt(20) * posNeg;
-      return {
-        ...p,
-        score: Math.min(100, Math.max(0, p.score + amount))
-      };
-    });
-
-    update({ ...state, players });
-  };
-
-  let checkScore = async server => {
-    try {
-      const json = await client.getTeams(server, "/teams");
-      console.log(json);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  if (server.url) {
-    // setInterval(() => {
-    //   checkScore(server);
-    // }, 1000);
-  } else {
-    setInterval(randomUpdate, 1000);
-  }
-
-  function update(newState) {
-    let winning = gameWinners(newState);
-
-    const winnerCount = winning.players.length;
-
-    if (winnerCount > 0) {
-      const label = winnerCount > 1 ? "Winners" : "Winner";
-      title = `${label}: ${winning.players.map(p => p.name).join(", ")}, ${
-        winning.score
-      } points`;
-      clearInterval(() => checkScore(server.url));
-      newState.gameOver = true;
-    } else {
-      title = "Game on";
-    }
-
-    state = newState;
-  }
 
   beforeUpdate(() => {
     const match = router.match($currentRoute);
@@ -151,6 +78,8 @@
       gameInstanceId={route.data} />
   {:else if route.component === PlayGame}
     <svelte:component this={PlayGame} {client} {router} teamId={route.data} />
+  {:else if route.component === Board}
+    <Board {client} gameInstanceId={route.data} />
   {:else}
     <svelte:component this={route.component} {client} />
   {/if}
