@@ -103,9 +103,14 @@ export default class Client {
     return this.get(`/gameinstances/${gameInstanceId}`)
   }
 
+  async getQuestions(gameId) {
+    return this.get("/questions", { params: { gameId } })
+  }
+
   async createTeam({ name, avatar, gameInstanceId }) {
     return this.post(`/teams`, {
       params: {
+        avatar,
         name,
         instanceId: gameInstanceId
       }

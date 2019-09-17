@@ -23,7 +23,7 @@
   {#each instances as instance}
     <li>
       <Link
-        page={{ path: `/join/${instance.RowKey}`, title: instance.RowKey }} />
+        page={{ path: `/join/${instance.RowKey}`, params: { gameId }, title: instance.RowKey }} />
     </li>
   {/each}
 </ul>

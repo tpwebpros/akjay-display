@@ -3,6 +3,7 @@
   import { flashError } from "./stores";
 
   export let client;
+  export let gameId;
   export let gameInstanceId;
   export let router;
 
@@ -15,7 +16,7 @@
       const params = { name, avatar, gameInstanceId };
       const response = await client.createTeam(params);
       const teamId = response.newId;
-      redirect(`/play/${teamId}`);
+      redirect(`/play/${teamId}`, { gameInstanceId, gameId });
     } catch (err) {
       $flashError = err.message;
     }

@@ -71,13 +71,9 @@
   {#if route.component === GameInstancePicker}
     <svelte:component this={GameInstancePicker} {client} gameId={route.data} />
   {:else if route.component === JoinGame}
-    <svelte:component
-      this={JoinGame}
-      {client}
-      {router}
-      gameInstanceId={route.data} />
+    <svelte:component this={JoinGame} {client} {router} {...route.data} />
   {:else if route.component === PlayGame}
-    <svelte:component this={PlayGame} {client} {router} teamId={route.data} />
+    <svelte:component this={PlayGame} {client} {router} {...route.data} />
   {:else if route.component === Board}
     <Board {client} gameInstanceId={route.data} {updateInterval} />
   {:else}

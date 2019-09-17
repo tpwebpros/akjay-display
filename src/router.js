@@ -16,6 +16,10 @@ export default class Router {
     }
   }
 
+  pathWithOnePlaceholder(pathPrefix) {
+    return new RegExp(`^${pathPrefix}\/([\\w-]+)\/?$`)
+  }
+
   match(route) {
     const exact = Object.keys(this.routes).find(knownRoute => {
       if (route === knownRoute) {
@@ -31,37 +35,43 @@ export default class Router {
       }
     }
 
-    let match = route.match(/^\/games\/([\w-]+)$/)
+    const [path, queryString] = route.split("?")
+
+    let match = path.match(/^\/games\/([\w-]+)$/)
     if (match) {
       return {
-        path: route,
+        path,
         component: this.routes["/game/:gameId"],
         data: match[1]
       }
     }
 
-    match = route.match(/^\/join\/([\w-]+)$/)
+    match = path.match(this.pathWithOnePlaceholder("/join"))
     if (match) {
+      let gameInstanceId = match[1]
+      let params = paramsObject(queryString)
       return {
-        path: route,
+        path,
         component: this.routes["/join/:gameInstanceId"],
-        data: match[1]
+        data: { ...params, gameInstanceId }
       }
     }
 
-    match = route.match(/^\/play\/([\w-]+)$/)
+    match = path.match(this.pathWithOnePlaceholder("/play"))
     if (match) {
+      let teamId = match[1]
+      let params = paramsObject(queryString)
       return {
-        path: route,
+        path,
         component: this.routes["/play/:teamId"],
-        data: match[1]
+        data: { ...params, teamId }
       }
     }
 
-    match = route.match(/^\/board\/([\w-]+)$/)
+    match = path.match(/^\/board\/([\w-]+)$/)
     if (match) {
       return {
-        path: route,
+        path,
         component: this.routes["/board/:gameInstanceId"],
         data: match[1]
       }
@@ -69,16 +79,19 @@ export default class Router {
   }
 }
 
+function paramsObject(queryString) {
+  let searchParams = new URLSearchParams(queryString)
+  let params = {}
+
+  searchParams.forEach((value, key) => {
+    params[key] = value
+  })
+
+  return params
+}
+
 export function redirect(path, params = {}) {
-  let searchParams = new URLSearchParams()
-
-  for (const key in params) {
-    searchParams.append(key, params[key])
-  }
-
-  const queryString = searchParams.toString()
-
-  let pathWithParams = queryString.length > 0 ? `${path}?${queryString}` : path
+  let pathWithParams = pathWithQueryString(path, params)
   currentRoute.set(pathWithParams)
 
   window.history.pushState(
@@ -88,4 +101,25 @@ export function redirect(path, params = {}) {
     "",
     window.location.origin + pathWithParams
   )
+}
+
+export function pathWithQueryString(path, params) {
+  let query = queryString(params)
+  return query.length > 0 ? `${path}?${query}` : path
+}
+
+export function queryString(params) {
+  if (typeof params === "string") {
+    return new URLSearchParams(params).toString()
+  }
+
+  let searchParams = new URLSearchParams()
+
+  for (const key in params) {
+    if (params[key] !== undefined) {
+      searchParams.append(key, params[key])
+    }
+  }
+
+  return searchParams.toString()
 }
