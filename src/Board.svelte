@@ -3,6 +3,7 @@
 
   export let client;
   export let gameInstanceId;
+  export let updateInterval;
 
   let state = {
     teams: [],
@@ -57,7 +58,7 @@
 
   setInterval(() => {
     getGameUpdate(gameInstanceId);
-  }, 1000);
+  }, updateInterval);
 
   function updateState(oldState, serverUpdate) {
     const newState = { ...oldState };
@@ -65,9 +66,7 @@
       newState.teams = serverUpdate.teams;
     }
 
-    let winning = gameWinners(newState);
-    console.log(winning);
-
+    const winning = gameWinners(newState);
     const winnerCount = winning.teams.length;
 
     if (winnerCount > 0) {

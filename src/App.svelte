@@ -39,7 +39,7 @@
     ]
   };
 
-  let games = [];
+  let updateInterval = 3000; // 3 seconds
 
   beforeUpdate(() => {
     const match = router.match($currentRoute);
@@ -79,7 +79,7 @@
   {:else if route.component === PlayGame}
     <svelte:component this={PlayGame} {client} {router} teamId={route.data} />
   {:else if route.component === Board}
-    <Board {client} gameInstanceId={route.data} />
+    <Board {client} gameInstanceId={route.data} {updateInterval} />
   {:else}
     <svelte:component this={route.component} {client} />
   {/if}
