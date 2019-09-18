@@ -52,6 +52,8 @@
 
 <ul>
   {#each questions as question}
-    <li>{question.questionText}</li>
+    <li>
+      {@html question.questionText}
+    </li>
   {/each}
 </ul>
