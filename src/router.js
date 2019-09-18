@@ -18,7 +18,7 @@ export default class Router {
   }
 
   pathWithOnePlaceholder(pathPrefix) {
-    return new RegExp(`^${pathPrefix}\/([\\w-]+)\/?$`)
+    return new RegExp(`^${pathPrefix}/([\\w-]+)/?$`)
   }
 
   match(route) {
