@@ -64,12 +64,6 @@
     const id = parent.dataset["id"];
     questions = toggleOne(questions, id, isCurrent);
     currentQuestion = questions[id];
-    console.log(
-      Object.values(questions).map(q => ({
-        text: q.questionText,
-        current: q.isCurrentQuestion
-      }))
-    );
   }
 
   async function handleAnswer(event) {
@@ -106,9 +100,13 @@
   .question {
     cursor: pointer;
   }
+  .current {
+    font-weight: bold;
+  }
 
   .answer {
     margin: 1em 0;
+    font-weight: normal;
   }
 
   .answer textarea,
@@ -137,7 +135,7 @@
 
 <ol>
   {#each Object.values(questions) as question (question.RowKey)}
-    <li on:click>
+    <li on:click class:current={question[isCurrent]}>
       <div
         class="question"
         data-id={question.RowKey}
