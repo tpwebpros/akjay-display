@@ -3,88 +3,59 @@ import NotFound from "./NotFound.svelte"
 
 export default class Router {
   constructor(routes) {
-    this.routes = routes
+    this.routes = this.compileRoutes(routes)
   }
 
-  default() {
-    let root = "/"
-    let path = this.routes[root] ? root : Object.keys(this.routes)[0]
+  compileRoutes(routes) {
+    let compiled = {}
+    Object.entries(routes).forEach(([path, component]) => {
+      compiled[path] = { component, ...this.matcherFor(path) }
+    })
+    return compiled
+  }
 
-    return {
-      path,
-      component: this.routes[path],
-      data: {}
+  matcherFor(path) {
+    const names = path
+      .split(":")
+      .slice(1)
+      .filter(x => x)
+      .map(part => {
+        const [name] = part.split("/")
+        return name
+      })
+
+    const matcher = "([\\w-]+)"
+    let template = path
+
+    for (name of names) {
+      template = template.replace(`:${name}`, matcher)
     }
-  }
 
-  pathWithOnePlaceholder(pathPrefix) {
-    return new RegExp(`^${pathPrefix}/([\\w-]+)/?$`)
+    return { names, regexp: new RegExp(`^${template}/?$`) }
   }
 
   match(route) {
-    const exact = Object.keys(this.routes).find(knownRoute => {
-      if (route === knownRoute) {
-        return true
-      }
-    })
-
-    if (exact) {
-      return {
-        path: route,
-        component: this.routes[exact],
-        data: {}
-      }
-    }
-
     const [path, queryString] = route.split("?")
 
-    let match = path.match(this.pathWithOnePlaceholder("/games"))
-    if (match) {
-      let gameId = match[1]
-      return {
-        path,
-        component: this.routes["/games/:gameId"],
-        data: { gameId }
-      }
-    }
+    let match = null
+    const matchedRoute = Object.values(this.routes).find(route => {
+      match = path.match(route.regexp)
+      return match != null
+    })
 
-    match = path.match(this.pathWithOnePlaceholder("/join"))
     if (match) {
-      let gameInstanceId = match[1]
+      const { component, names } = matchedRoute
+      let namedParams = {}
+
+      names.forEach((name, i) => {
+        namedParams[name] = match[i + 1]
+      })
+
       let params = paramsObject(queryString)
-      return {
-        path,
-        component: this.routes["/join/:gameInstanceId"],
-        data: { ...params, gameInstanceId }
-      }
+      return { path, component, data: { ...namedParams, ...params } }
     }
 
-    match = path.match(this.pathWithOnePlaceholder("/play"))
-    if (match) {
-      let teamId = match[1]
-      let params = paramsObject(queryString)
-      return {
-        path,
-        component: this.routes["/play/:teamId"],
-        data: { ...params, teamId }
-      }
-    }
-
-    match = path.match(this.pathWithOnePlaceholder("/board"))
-    if (match) {
-      const gameInstanceId = match[1]
-      return {
-        path,
-        component: this.routes["/board/:gameInstanceId"],
-        data: { gameInstanceId }
-      }
-    }
-
-    return {
-      path,
-      component: NotFound,
-      data: {}
-    }
+    return { path, component: NotFound, data: {} }
   }
 }
 
