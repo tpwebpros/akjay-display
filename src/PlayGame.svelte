@@ -1,5 +1,7 @@
 <script>
   import { onMount } from "svelte";
+  import { slide } from "svelte/transition";
+  import { cubicOut } from "svelte/easing";
   import { flashError, flashSuccess } from "./stores";
   import Team from "./Team.svelte";
 
@@ -12,6 +14,9 @@
 
   let questions = {};
   let currentQuestion = undefined;
+
+  // Local key for tracking the current question
+  const isCurrent = "isCurrentQuestion";
 
   async function getQuestions() {
     try {
@@ -39,11 +44,32 @@
     }
   }
 
+  // Toggle the given property for one item in the list.
+  // All other items have the property set to `false`
+  function toggleOne(list, id, property) {
+    const previousValue = list[id][property];
+    const toggled = {};
+
+    for (let [key, value] of Object.entries(list)) {
+      toggled[key] = { ...value, [property]: false };
+    }
+
+    toggled[id][property] = previousValue ? false : true;
+
+    return toggled;
+  }
+
   function chooseQuestion(event) {
     const parent = event.target.parentElement;
     const id = parent.dataset["id"];
-    parent.classList.toggle("active");
+    questions = toggleOne(questions, id, isCurrent);
     currentQuestion = questions[id];
+    console.log(
+      Object.values(questions).map(q => ({
+        text: q.questionText,
+        current: q.isCurrentQuestion
+      }))
+    );
   }
 
   async function handleAnswer(event) {
@@ -81,19 +107,19 @@
     cursor: pointer;
   }
 
-  .question.active + .answer {
-    display: block;
-  }
-
   .answer {
     margin: 1em 0;
-    display: none;
   }
 
   .answer textarea,
   .answer label,
   .answer button {
     display: block;
+  }
+
+  .answer textarea {
+    max-width: 30em;
+    width: 100%;
   }
 
   .answer button {
@@ -110,7 +136,7 @@
 <h2>Choose a question</h2>
 
 <ol>
-  {#each Object.values(questions) as question}
+  {#each Object.values(questions) as question (question.RowKey)}
     <li on:click>
       <div
         class="question"
@@ -121,11 +147,14 @@
         </span>
         <span class="value">({question.value} points)</span>
       </div>
-      {#if question === currentQuestion}
-        <form class="answer" on:submit|preventDefault={handleAnswer}>
+      {#if question === currentQuestion && currentQuestion[isCurrent]}
+        <form
+          transition:slide={{ duration: 300, easing: cubicOut }}
+          class="answer"
+          on:submit|preventDefault={handleAnswer}>
           <input type="hidden" name="questionId" value={question.RowKey} />
           <label for="answerText">Your answer</label>
-          <textarea name="answerText" />
+          <textarea name="answerText" rows="6" cols="40" />
           <button type="submit">Submit</button>
         </form>
       {/if}
