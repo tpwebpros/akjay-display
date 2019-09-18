@@ -38,12 +38,13 @@ export default class Router {
 
     const [path, queryString] = route.split("?")
 
-    let match = path.match(/^\/games\/([\w-]+)$/)
+    let match = path.match(this.pathWithOnePlaceholder("/games"))
     if (match) {
+      let gameId = match[1]
       return {
         path,
-        component: this.routes["/game/:gameId"],
-        data: match[1]
+        component: this.routes["/games/:gameId"],
+        data: { gameId }
       }
     }
 
@@ -69,12 +70,13 @@ export default class Router {
       }
     }
 
-    match = path.match(/^\/board\/([\w-]+)$/)
+    match = path.match(this.pathWithOnePlaceholder("/board"))
     if (match) {
+      const gameInstanceId = match[1]
       return {
         path,
         component: this.routes["/board/:gameInstanceId"],
-        data: match[1]
+        data: { gameInstanceId }
       }
     }
 

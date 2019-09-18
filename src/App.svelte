@@ -18,7 +18,7 @@
   const router = new Router({
     "/": GamePicker,
     "/games": GamePicker,
-    "/game/:gameId": GameInstancePicker,
+    "/games/:gameId": GameInstancePicker,
     "/join/:gameInstanceId": JoinGame,
     "/play/:teamId": PlayGame,
     "/board/:gameInstanceId": Board
@@ -76,15 +76,9 @@
 
 <main>
   <Flash />
-  {#if route.component === GameInstancePicker}
-    <svelte:component this={GameInstancePicker} {client} gameId={route.data} />
-  {:else if route.component === JoinGame}
-    <svelte:component this={JoinGame} {client} {...route.data} />
-  {:else if route.component === PlayGame}
-    <svelte:component this={PlayGame} {client} {...route.data} />
-  {:else if route.component === Board}
-    <Board {client} gameInstanceId={route.data} {updateInterval} />
+  {#if route.component === Board}
+    <Board {client} {...route.data} {updateInterval} />
   {:else}
-    <svelte:component this={route.component} {client} />
+    <svelte:component this={route.component} {client} {...route.data} />
   {/if}
 </main>
