@@ -8,7 +8,7 @@
   import JoinGame from "./JoinGame.svelte";
   import PlayGame from "./PlayGame.svelte";
   import Client from "./client";
-  import Router, { redirect } from "./router";
+  import Router, { redirect, pathWithQueryString } from "./router";
   import { currentRoute } from "./stores";
 
   export let server;
@@ -52,15 +52,23 @@
 
   onMount(() => {
     const path = window.location.pathname;
-    currentRoute.set(path);
+    const queryString = window.location.search;
+    const route = pathWithQueryString(path, queryString);
+    currentRoute.set(route);
 
     if (!history.state) {
-      window.history.replaceState({ path }, "", window.location.href);
+      window.history.replaceState(
+        { path, queryString },
+        "",
+        window.location.href
+      );
     }
   });
 
   function handleBackNavigation(event) {
-    currentRoute.set(event.state.path);
+    const { path, queryString } = event.state;
+    const route = pathWithQueryString(path, queryString);
+    currentRoute.set(route);
   }
 </script>
 
