@@ -78,7 +78,8 @@
         teamId
       });
       if (response.code === "match") {
-        $flashSuccess = "Correct! You got xxx points.";
+        $flashSuccess = `Correct! ${response.message || ""}`;
+        getTeam();
       } else if (response.code === "nomatch") {
         $flashError = "Wrong! Try again.";
       } else {
@@ -128,7 +129,7 @@
 <h1>Game on</h1>
 
 {#if team}
-  <Team name={team.name} avatar={team.avatar} />
+  <Team name={team.name} avatar={team.avatar} score={team.score} />
 {/if}
 
 <h2>Choose a question</h2>
