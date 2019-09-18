@@ -1,17 +1,16 @@
 <script>
+  import { onMount } from "svelte";
   import Link from "./Link.svelte";
 
   export let client;
 
   let games = [];
 
-  client.getGames().then(response => {
-    games = response.data;
-    console.log(response);
+  onMount(() => {
+    client.getGames().then(response => {
+      games = response.data;
+    });
   });
-
-  // Pick game -> List instances -> Create team (post to /teams) -> Play game
-  // Answered questions stored on team record
 </script>
 
 <style>
