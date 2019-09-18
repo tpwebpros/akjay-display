@@ -25,7 +25,8 @@
 <ul>
   {#each games as game}
     <li>
-      <Link page={{ path: `/games/${game.RowKey}`, title: game.name }} />
+      <Link
+        page={{ path: `/games/${game.RowKey}`, title: `${game.name} (${game.maxScore} points)` }} />
     </li>
   {/each}
 </ul>

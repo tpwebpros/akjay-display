@@ -10,7 +10,7 @@ export default class Client {
     url.pathname = url.pathname + path
     url.searchParams.set("code", this.server.accessCode)
 
-    Object.entries(params).forEach(({ key, value }) => {
+    Object.entries(params).forEach(([key, value]) => {
       url.searchParams.set(key, value)
     })
 
@@ -115,5 +115,9 @@ export default class Client {
         instanceId: gameInstanceId
       }
     })
+  }
+
+  async answerQuestion({ answerText, gameId, questionId, teamId }) {
+    return this.post(`/games/${gameId}/checkAnswer`, { params: { answerText, questionId, teamId } })
   }
 }

@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { flashError } from "./stores";
+  import { flashError, flashSuccess } from "./stores";
   import Team from "./Team.svelte";
 
   export let client;
@@ -44,7 +44,29 @@
     currentQuestion = questions[id];
   }
 
-  function handleAnswer() {}
+  async function handleAnswer(event) {
+    const inputs = event.target.elements;
+    const questionId = inputs["questionId"].value;
+    const answerText = inputs["answerText"].value.trim();
+    try {
+      const response = await client.answerQuestion({
+        answerText,
+        gameId,
+        questionId,
+        teamId
+      });
+      if (response.code === "match") {
+        $flashSuccess = "Correct! You got xxx points.";
+      } else if (response.code === "nomatch") {
+        $flashError = "Wrong! Try again.";
+      } else {
+        $flashError = `Unexpected response code=${response.code}`;
+      }
+    } catch (err) {
+      console.log(err);
+      $flashError = err.message;
+    }
+  }
 
   onMount(() => {
     getQuestions();
@@ -80,8 +102,9 @@
       </div>
       {#if question === currentQuestion}
         <form on:submit|preventDefault={handleAnswer}>
-          <label for={question.RowKey}>Your answer</label>
-          <textarea name={question.RowKey} />
+          <input type="hidden" name="questionId" value={question.RowKey} />
+          <label for="answerText">Your answer</label>
+          <textarea name="answerText" />
           <button type="submit">Submit</button>
         </form>
       {/if}
