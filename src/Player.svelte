@@ -6,10 +6,6 @@
   export let player;
   export let maxScore;
 
-  function randomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-  }
-
   function scorePercent(score, maxScore) {
     return Math.round((score / maxScore) * 100);
   }
@@ -62,7 +58,8 @@
   <span
     class="marker"
     style="transform: translateX({translateX(player.score, maxScore)};">
-    <span class="avatar ec ec-{player.avatar}" />
+    <span
+      class="avatar ec ec-{player.avatar === 'none' ? 'question' : player.avatar}" />
     <span class="score">{player.score}</span>
   </span>
 </section>
