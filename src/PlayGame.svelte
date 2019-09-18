@@ -4,7 +4,6 @@
   import Team from "./Team.svelte";
 
   export let client;
-  export let router;
   export let teamId;
   export let gameId;
   export let gameInstanceId;

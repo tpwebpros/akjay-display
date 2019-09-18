@@ -7,7 +7,6 @@
   export let client;
   export let gameId;
   export let gameInstanceId;
-  export let router;
 
   let name = "";
   let avatar = "";
@@ -58,7 +57,6 @@
   onMount(async () => {
     try {
       const response = await client.getGameInstance(gameInstanceId);
-      console.log(response);
       if (Array.isArray(response.teams)) {
         teams = response.teams.reduce((acc, team) => {
           acc[team.RowKey] = team;
