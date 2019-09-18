@@ -1,37 +1,37 @@
 import { currentRoute } from "./stores"
 import NotFound from "./NotFound.svelte"
 
+function compileRoutes(routes) {
+  let compiled = {}
+  Object.entries(routes).forEach(([path, component]) => {
+    compiled[path] = { component, ...matcherFor(path) }
+  })
+  return compiled
+}
+
+function matcherFor(path) {
+  const names = path
+    .split(":")
+    .slice(1)
+    .filter(x => x)
+    .map(part => {
+      const [name] = part.split("/")
+      return name
+    })
+
+  const matcher = "([\\w-]+)"
+  let template = path
+
+  for (name of names) {
+    template = template.replace(`:${name}`, matcher)
+  }
+
+  return { names, regexp: new RegExp(`^${template}/?$`) }
+}
+
 export default class Router {
   constructor(routes) {
-    this.routes = this.compileRoutes(routes)
-  }
-
-  compileRoutes(routes) {
-    let compiled = {}
-    Object.entries(routes).forEach(([path, component]) => {
-      compiled[path] = { component, ...this.matcherFor(path) }
-    })
-    return compiled
-  }
-
-  matcherFor(path) {
-    const names = path
-      .split(":")
-      .slice(1)
-      .filter(x => x)
-      .map(part => {
-        const [name] = part.split("/")
-        return name
-      })
-
-    const matcher = "([\\w-]+)"
-    let template = path
-
-    for (name of names) {
-      template = template.replace(`:${name}`, matcher)
-    }
-
-    return { names, regexp: new RegExp(`^${template}/?$`) }
+    this.routes = compileRoutes(routes)
   }
 
   match(route) {
