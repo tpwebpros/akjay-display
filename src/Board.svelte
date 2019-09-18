@@ -12,11 +12,9 @@
     gameOver: false
   };
 
-  let serverUpdate = {
-    teams: []
-  };
-
   let title = "";
+  let subtitle = "";
+  let gameId;
 
   const colors = [
     "salmon",
@@ -27,33 +25,37 @@
   ];
 
   function gameWinners(state) {
-    return state.teams.reduce(
-      (best, p) => {
-        if (p.score < state.maxScore) {
-          return best;
-        }
+    let best = { score: 0, teams: [] };
 
-        if (p.score > best.score) {
-          return { score: p.score, teams: [p] };
-        }
+    for (let p of state.teams) {
+      if (p.score < state.maxScore) {
+        continue;
+      }
 
-        if (p.score === best.score) {
-          return { score: best.score, teams: [...best.teams, p] };
-        }
+      if (p.score > best.score) {
+        best = { score: p.score, teams: [p] };
+      }
 
-        return best;
-      },
-      { score: 0, teams: [] }
-    );
+      if (p.score === best.score) {
+        best = { score: best.score, teams: [...best.teams, p] };
+      }
+    }
+
+    return best;
   }
 
   let getGameInstanceUpdate = async gameInstanceId => {
     try {
       const json = await client.getGameInstance(gameInstanceId);
-      const gameId = json && json.data && json.data.gameId;
-      if (gameId) {
-        getGame(gameId);
+
+      // Only fetch the game once
+      if (!gameId) {
+        gameId = json && json.data && json.data.gameId;
+        if (gameId) {
+          getGame(gameId);
+        }
       }
+
       state = updateState(state, json);
     } catch (err) {
       console.error(err);
@@ -94,8 +96,9 @@
   async function getGame(gameId) {
     try {
       const game = await client.getGame(gameId);
-      const maxScore = game && game.data && game.data.maxScore;
+      const { maxScore, name } = game.data;
       state = updateState(state, { maxScore });
+      subtitle = `Playing ${name || "a game"}`;
     } catch (err) {
       console.error(err);
     }
@@ -109,6 +112,9 @@
     flex-direction: column;
   }
 </style>
+
+<h1>{title}</h1>
+<h2>{subtitle}</h2>
 
 <div class="board">
   {#each state.teams as player, i}
