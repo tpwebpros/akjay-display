@@ -16,12 +16,13 @@
   async function getQuestions() {
     try {
       const response = await client.getQuestions(gameId);
-      if (Array.isArray(response.data)) {
-        questions = response.data.reduce((acc, q) => {
-          acc[q.RowKey] = q;
-          return acc;
-        }, {});
+      const newQuestions = {};
+
+      for (const q of response.data) {
+        newQuestions[q.RowKey] = q;
       }
+
+      questions = newQuestions;
     } catch (err) {
       console.log(err);
       $flashError = err.message;
@@ -39,7 +40,9 @@
   }
 
   function chooseQuestion(event) {
-    const id = event.target.parentElement.dataset["id"];
+    const parent = event.target.parentElement;
+    const id = parent.dataset["id"];
+    parent.classList.toggle("active");
     currentQuestion = questions[id];
   }
 
@@ -77,6 +80,25 @@
   .question {
     cursor: pointer;
   }
+
+  .question.active + .answer {
+    display: block;
+  }
+
+  .answer {
+    margin: 1em 0;
+    display: none;
+  }
+
+  .answer textarea,
+  .answer label,
+  .answer button {
+    display: block;
+  }
+
+  .answer button {
+    margin-top: 0.8em;
+  }
 </style>
 
 <h1>Game on</h1>
@@ -100,7 +122,7 @@
         <span class="value">({question.value} points)</span>
       </div>
       {#if question === currentQuestion}
-        <form on:submit|preventDefault={handleAnswer}>
+        <form class="answer" on:submit|preventDefault={handleAnswer}>
           <input type="hidden" name="questionId" value={question.RowKey} />
           <label for="answerText">Your answer</label>
           <textarea name="answerText" />
