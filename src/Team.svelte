@@ -1,6 +1,8 @@
 <script>
+  import Avatar from "./Avatar.svelte";
   export let avatar;
   export let name;
+  const avatarSize = "2rem";
 </script>
 
 <style>
@@ -15,23 +17,11 @@
     display: inline-block;
     top: -0.2rem;
   }
-
-  .team .avatar {
-    font-style: normal;
-    font-size: 2rem;
-  }
 </style>
 
 <div class="team">
-
-  {#if avatar}
-    {#if avatar === 'none' && name}
-      <span class="avatar ec ec-question" />
-    {/if}
-    <span class="avatar ec ec-{avatar}" />
-  {/if}
-
   {#if name}
+    <Avatar {avatar} size={avatarSize} />
     <span class="name">{name}</span>
   {/if}
 </div>

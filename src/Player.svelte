@@ -1,10 +1,13 @@
 <script>
+  import Avatar from "./Avatar.svelte";
   export let color;
   export let count;
   export let gameOver;
   export let number;
   export let player;
   export let maxScore;
+
+  const avatarSize = "4rem";
 
   function scorePercent(score, maxScore) {
     return Math.round((score / maxScore) * 100);
@@ -42,10 +45,6 @@
     width: 4rem;
   }
 
-  .avatar {
-    font-size: 4rem;
-  }
-
   .score {
     color: #333;
     font-weight: 700;
@@ -58,8 +57,7 @@
   <span
     class="marker"
     style="transform: translateX({translateX(player.score, maxScore)};">
-    <span
-      class="avatar ec ec-{player.avatar === 'none' ? 'question' : player.avatar}" />
+    <Avatar avatar={player.avatar} size={avatarSize} />
     <span class="score">{player.score}</span>
   </span>
 </section>
