@@ -1,5 +1,5 @@
 <script>
-  import { onMount, beforeUpdate } from "svelte";
+  import { beforeUpdate } from "svelte";
 
   import Board from "./Board.svelte";
   import Flash from "./Flash.svelte";
@@ -24,8 +24,6 @@
     "/board/:gameInstanceId": Board
   });
 
-  let title = "Waiting for game";
-
   let route;
 
   let state = {
@@ -42,19 +40,22 @@
   let updateInterval = 3000; // 3 seconds
 
   beforeUpdate(() => {
-    const match = router.match($currentRoute);
-    if (match) {
-      route = match;
-    } else {
-      alert(`Not found: ${$currentRoute}`);
-    }
+    route = router.match($currentRoute);
   });
 
-  onMount(() => {
+  function handleBackNavigation(event) {
+    const { path, queryString } = event.state;
+    $currentRoute = pathWithQueryString(path, queryString);
+  }
+
+  // Set initial route once on load. Doesn't work in
+  // onMount() because that fires after the first render
+  (() => {
     const path = window.location.pathname;
     const queryString = window.location.search;
-    const route = pathWithQueryString(path, queryString);
-    currentRoute.set(route);
+    const initialRoute = pathWithQueryString(path, queryString);
+    $currentRoute = initialRoute;
+    route = router.match($currentRoute);
 
     if (!history.state) {
       window.history.replaceState(
@@ -63,13 +64,7 @@
         window.location.href
       );
     }
-  });
-
-  function handleBackNavigation(event) {
-    const { path, queryString } = event.state;
-    const route = pathWithQueryString(path, queryString);
-    currentRoute.set(route);
-  }
+  })();
 </script>
 
 <svelte:window on:popstate={handleBackNavigation} />
