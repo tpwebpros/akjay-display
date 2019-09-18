@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import Player from "./Player.svelte";
 
   export let client;
@@ -7,7 +8,7 @@
 
   let state = {
     teams: [],
-    maxScore: 100,
+    maxScore: Infinity,
     gameOver: false
   };
 
@@ -46,24 +47,31 @@
     );
   }
 
-  let getGameUpdate = async gameInstanceId => {
+  let getGameInstanceUpdate = async gameInstanceId => {
     try {
       const json = await client.getGameInstance(gameInstanceId);
+      const gameId = json && json.data && json.data.gameId;
+      if (gameId) {
+        getGame(gameId);
+      }
       state = updateState(state, json);
-      console.log(json);
     } catch (err) {
       console.error(err);
     }
   };
 
   setInterval(() => {
-    getGameUpdate(gameInstanceId);
+    getGameInstanceUpdate(gameInstanceId);
   }, updateInterval);
 
   function updateState(oldState, serverUpdate) {
     const newState = { ...oldState };
     if (Array.isArray(serverUpdate.teams)) {
       newState.teams = serverUpdate.teams;
+    }
+
+    if (serverUpdate.maxScore) {
+      newState.maxScore = serverUpdate.maxScore;
     }
 
     const winning = gameWinners(newState);
@@ -81,6 +89,16 @@
     }
 
     return newState;
+  }
+
+  async function getGame(gameId) {
+    try {
+      const game = await client.getGame(gameId);
+      const maxScore = game && game.data && game.data.maxScore;
+      state = updateState(state, { maxScore });
+    } catch (err) {
+      console.error(err);
+    }
   }
 </script>
 

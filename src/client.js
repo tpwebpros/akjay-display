@@ -87,6 +87,10 @@ export default class Client {
     return this.get("/teams")
   }
 
+  async getGame(gameId) {
+    return this.get(`/games/${gameId}`)
+  }
+
   async getGames() {
     return this.get("/games")
   }
