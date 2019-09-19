@@ -26,7 +26,7 @@
   let answerError = "";
   let answerSuccess = "";
 
-  let winners = [];
+  let winners = { teams: [] };
 
   $: {
     if (checker && gameOver) {
@@ -34,7 +34,11 @@
     }
   }
 
+  $: gameOver = winners.teams.length > 0;
   $: title = gameOver ? "Game over" : title;
+  $: winningTeamNames = winners.teams.map(x => x.name);
+  $: winningScore = winners.score;
+  $: console.log({ winningScore, winningTeamNames });
 
   // Local key for tracking the current question
   const isCurrent = "isCurrentQuestion";
@@ -75,11 +79,8 @@
 
   async function checkForWinners() {
     const response = await getGameInstance(gameInstanceId);
-    const winners = gameWinners(response);
+    winners = gameWinners(response);
     console.log(winners);
-    if (winners.teams.length > 0) {
-      gameOver = true;
-    }
   }
 
   function clearFlash() {
@@ -188,8 +189,9 @@
 
   .disabled {
     cursor: not-allowed;
-    opacity: 0.5;
     font-weight: normal;
+    opacity: 0.7;
+    text-decoration: line-through;
   }
 
   .answer {
@@ -225,6 +227,12 @@
 
 <h1>{title}</h1>
 
+{#if winningTeamNames.length > 0}
+  <h2>
+    Congratulations to {winningTeamNames.join(', ')} with {winningScore} points!
+  </h2>
+{/if}
+
 <GlobalFlash />
 
 <p>
@@ -249,9 +257,6 @@
           {@html question.questionText}
         </span>
         <span class="value">({question.value} points)</span>
-        {#if questionIsAnswered(question, team)}
-          <span class="answered ec ec-trophy" />
-        {/if}
       </div>
       {#if question === currentQuestion && currentQuestion[isCurrent]}
         <Flash error={answerError} success={answerSuccess} />
