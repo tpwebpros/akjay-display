@@ -111,6 +111,12 @@ export default class Client {
     return this.get("/questions", { params: { gameId } })
   }
 
+  async createGameInstance(gameId) {
+    return this.post(`/gameinstances`, {
+      params: { gameId }
+    })
+  }
+
   async createTeam({ name, avatar, gameInstanceId }) {
     return this.post(`/teams`, {
       params: {

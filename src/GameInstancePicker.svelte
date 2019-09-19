@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte";
   import Link from "./Link.svelte";
 
   export let client;
@@ -6,9 +7,18 @@
 
   let instances = [];
 
-  client.getGameInstances(gameId).then(response => {
-    instances = response.data;
-  });
+  function getGameInstances() {
+    client.getGameInstances(gameId).then(response => {
+      instances = response.data;
+    });
+  }
+
+  async function newGame() {
+    await client.createGameInstance(gameId);
+    getGameInstances();
+  }
+
+  onMount(getGameInstances);
 </script>
 
 <style>
@@ -27,3 +37,5 @@
     </li>
   {/each}
 </ul>
+
+<button on:click={newGame}>New game</button>
