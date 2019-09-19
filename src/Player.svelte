@@ -1,5 +1,6 @@
 <script>
   import Avatar from "./Avatar.svelte";
+  import Score from "./Score.svelte";
   export let color;
   export let count;
   export let gameOver;
@@ -16,9 +17,10 @@
   function translateX(score) {
     const width = 4;
     const margin = 2;
-    const offsetForWidth = (score / 100) * width;
-    const offsetForMargin = (score / 100) * margin;
-    return `calc(${score}vw - ${offsetForMargin}em - ${offsetForWidth}em)`;
+    const percent = scorePercent(score, maxScore);
+    const offsetForWidth = (percent / 100) * width;
+    const offsetForMargin = (percent / 100) * margin;
+    return `calc(${percent}vw - ${offsetForMargin}em - ${offsetForWidth}em)`;
   }
 </script>
 
@@ -44,12 +46,6 @@
     transition: transform 0.5s ease-out;
     width: 4rem;
   }
-
-  .score {
-    color: #333;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
-  }
 </style>
 
 <section class="player" style="background-color: {color}">
@@ -58,6 +54,6 @@
     class="marker"
     style="transform: translateX({translateX(player.score, maxScore)};">
     <Avatar avatar={player.avatar} size={avatarSize} />
-    <span class="score">{player.score}</span>
+    <Score score={player.score} style:margin-bottom={'0.4rem'} />
   </span>
 </section>
