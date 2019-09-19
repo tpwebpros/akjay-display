@@ -1,5 +1,6 @@
 <script>
-  import { flashError, flashSuccess } from "./stores";
+  export let error = "";
+  export let success = "";
 </script>
 
 <style>
@@ -27,6 +28,6 @@
 </style>
 
 <div>
-  <div class="success" data-success={$flashSuccess !== ''}>{$flashSuccess}</div>
-  <div class="error" data-error={$flashError !== ''}>{$flashError}</div>
+  <div class="success" data-success={success !== ''}>{success}</div>
+  <div class="error" data-error={error !== ''}>{error}</div>
 </div>

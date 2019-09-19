@@ -2,7 +2,6 @@
   import { beforeUpdate } from "svelte";
 
   import Board from "./Board.svelte";
-  import Flash from "./Flash.svelte";
   import GamePicker from "./GamePicker.svelte";
   import GameInstancePicker from "./GameInstancePicker.svelte";
   import JoinGame from "./JoinGame.svelte";
@@ -58,7 +57,6 @@
 <svelte:window on:popstate={handleBackNavigation} />
 
 <main>
-  <Flash />
   {#if route.component === Board}
     <Board {client} {...route.data} {updateInterval} />
   {:else}

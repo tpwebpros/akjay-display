@@ -3,6 +3,8 @@
   import { slide } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
   import { flashError, flashSuccess } from "./stores";
+  import Flash from "./Flash.svelte";
+  import GlobalFlash from "./GlobalFlash.svelte";
   import Link from "./Link.svelte";
   import Team from "./Team.svelte";
 
@@ -15,6 +17,9 @@
 
   let questions = {};
   let currentQuestion = null;
+
+  let answerError = "";
+  let answerSuccess = "";
 
   // Local key for tracking the current question
   const isCurrent = "isCurrentQuestion";
@@ -45,6 +50,13 @@
     }
   }
 
+  function clearFlash() {
+    $flashError = "";
+    $flashSuccess = "";
+    answerError = "";
+    answerSuccess = "";
+  }
+
   function allFalse(list, property) {
     const updated = {};
     for (let [key, value] of Object.entries(list)) {
@@ -69,6 +81,7 @@
       return;
     }
     questions = toggleOne(questions, id, isCurrent);
+    clearFlash();
     currentQuestion = questions[id];
   }
 
@@ -84,18 +97,18 @@
         teamId
       });
       if (response.code === "match") {
-        $flashSuccess = `Correct! ${response.message || ""}`;
+        answerSuccess = `Correct! ${response.message || ""}`;
         currentQuestion = null;
         allFalse(questions, isCurrent);
         getTeam();
       } else if (response.code === "nomatch") {
-        $flashError = "Wrong! Try again.";
+        answerError = "Wrong! Try again.";
       } else {
-        $flashError = `Unexpected response code=${response.code}`;
+        answerError = `Unexpected response code=${response.code}`;
       }
     } catch (err) {
       console.log(err);
-      $flashError = err.message;
+      answerError = err.message;
     }
   }
 
@@ -113,6 +126,22 @@
 </script>
 
 <style>
+  header {
+    background-color: #eee;
+    border-bottom: 1px solid #aaa;
+    height: 5rem;
+    margin-left: -8px;
+    padding: 0.5rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .header-space {
+    height: 5rem;
+  }
+
   .question {
     cursor: pointer;
   }
@@ -148,11 +177,19 @@
   }
 </style>
 
+<header>
+  {#if team}
+    <Team name={team.name} avatar={team.avatar} score={team.score} />
+  {:else}
+    <p>Loading team...</p>
+  {/if}
+</header>
+
+<div class="header-space" />
+
 <h1>Game on</h1>
 
-{#if team}
-  <Team name={team.name} avatar={team.avatar} score={team.score} />
-{/if}
+<GlobalFlash />
 
 <p>
   <Link
@@ -181,6 +218,7 @@
         {/if}
       </div>
       {#if question === currentQuestion && currentQuestion[isCurrent]}
+        <Flash error={answerError} success={answerSuccess} />
         <form
           transition:slide={{ duration: 300, easing: cubicOut }}
           class="answer"

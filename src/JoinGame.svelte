@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { redirect } from "./router";
   import { flashError } from "./stores";
+  import Flash from "./Flash.svelte";
   import Team from "./Team.svelte";
 
   export let client;
@@ -88,6 +89,8 @@
 </style>
 
 <h1>Join the game</h1>
+
+<Flash />
 
 <div class="choices">
   <div class="create-team">
