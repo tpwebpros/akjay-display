@@ -6,10 +6,9 @@
 
   let games = [];
 
-  onMount(() => {
-    client.getGames().then(response => {
-      games = response.data;
-    });
+  onMount(async () => {
+    const response = await client.getGames();
+    games = response.data;
   });
 </script>
 

@@ -77,6 +77,17 @@
     cursor: not-allowed;
   }
 
+  form label,
+  form button,
+  form input,
+  form select {
+    display: block;
+  }
+
+  form button {
+    margin-top: 0.8em;
+  }
+
   .choices {
     display: flex;
     flex-flow: row wrap;
@@ -101,7 +112,7 @@
 
       <label for="avatar">Avatar</label>
       <select name="avatar" bind:value={avatar}>
-        <option selected />
+        <option selected disabled value="">Choose an avatar</option>
         {#each avatars as a}
           <option value={a}>{a}</option>
         {/each}
@@ -118,17 +129,17 @@
   <div class="separator">or</div>
 
   <div>
-    <h2>Play an existing team</h2>
+    <h2>Be an existing team</h2>
     <form on:submit|preventDefault={handlePlayTeam}>
-      <select bind:value={assumedTeamId}>
-        <option selected />
+      <label for="existing-name">Team name</label>
+      <select name="existing-name" bind:value={assumedTeamId}>
+        <option selected disabled value="">Choose a team</option>
         {#each Object.values(teams) as team}
           <option value={team.RowKey}>{team.name}</option>
         {/each}
       </select>
 
-      <button disabled={!assumedTeamId} type="submit">Play with team</button>
-
+      <button disabled={!assumedTeamId} type="submit">Join game</button>
     </form>
 
     <div class="preview">

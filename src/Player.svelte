@@ -54,6 +54,6 @@
     class="marker"
     style="transform: translateX({translateX(player.score, maxScore)};">
     <Avatar avatar={player.avatar} size={avatarSize} />
-    <Score score={player.score} style:margin-bottom={'0.4rem'} />
+    <Score score={player.score} />
   </span>
 </section>

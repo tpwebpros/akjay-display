@@ -38,7 +38,6 @@
   $: title = gameOver ? "Game over" : title;
   $: winningTeamNames = winners.teams.map(x => x.name);
   $: winningScore = winners.score;
-  $: console.log({ winningScore, winningTeamNames });
 
   // Local key for tracking the current question
   const isCurrent = "isCurrentQuestion";
