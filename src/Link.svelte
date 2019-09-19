@@ -1,6 +1,7 @@
 <script>
   import { redirect, pathWithQueryString } from "./router";
   export let page = { params: {}, path: "/", title: "Home" };
+  export let target;
 
   function handleClick(event) {
     redirect(event.target.pathname, event.target.search);
@@ -15,4 +16,9 @@
 
 </style>
 
-<a href={href(page)} on:click|preventDefault={handleClick}>{page.title}</a>
+<a
+  href={href(page)}
+  on:click|preventDefault={handleClick}
+  target={target || ''}>
+  {page.title}
+</a>

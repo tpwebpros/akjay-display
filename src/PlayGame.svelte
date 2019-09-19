@@ -154,6 +154,12 @@
   <Team name={team.name} avatar={team.avatar} score={team.score} />
 {/if}
 
+<p>
+  <Link
+    page={{ path: `/board/${gameInstanceId}`, title: 'All teams' }}
+    target="_blank" />
+</p>
+
 <h2>Choose a question</h2>
 
 <ol>
