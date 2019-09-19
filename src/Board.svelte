@@ -4,7 +4,7 @@
 
   export let client;
   export let gameInstanceId;
-  export let updateInterval;
+  export let updateInterval = 3000;
 
   let state = {
     teams: [],
@@ -34,6 +34,7 @@
 
       if (p.score > best.score) {
         best = { score: p.score, teams: [p] };
+        continue;
       }
 
       if (p.score === best.score) {
