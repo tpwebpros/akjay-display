@@ -3,6 +3,7 @@
   import { slide } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
   import { flashError, flashSuccess } from "./stores";
+  import { gameWinners } from "./utils";
   import Flash from "./Flash.svelte";
   import GlobalFlash from "./GlobalFlash.svelte";
   import Link from "./Link.svelte";
@@ -13,13 +14,27 @@
   export let gameId;
   export let gameInstanceId;
 
+  let updateInterval = 3000; // 3s
   let team = null;
+  let title = "Loading...";
+  let gameOver = false;
+  let checker;
 
   let questions = {};
   let currentQuestion = null;
 
   let answerError = "";
   let answerSuccess = "";
+
+  let winners = [];
+
+  $: {
+    if (checker && gameOver) {
+      clearInterval(checker);
+    }
+  }
+
+  $: title = gameOver ? "Game over" : title;
 
   // Local key for tracking the current question
   const isCurrent = "isCurrentQuestion";
@@ -47,6 +62,23 @@
     } catch (err) {
       console.log(err);
       $flashError = err.message;
+    }
+  }
+
+  async function getGameInstance(gameInstanceId) {
+    try {
+      return await client.getGameInstance(gameInstanceId);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function checkForWinners() {
+    const response = await getGameInstance(gameInstanceId);
+    const winners = gameWinners(response);
+    console.log(winners);
+    if (winners.teams.length > 0) {
+      gameOver = true;
     }
   }
 
@@ -122,6 +154,10 @@
   onMount(() => {
     getQuestions();
     getTeam();
+
+    checker = setInterval(() => {
+      checkForWinners(gameInstanceId);
+    }, updateInterval);
   });
 </script>
 
@@ -187,7 +223,7 @@
 
 <div class="header-space" />
 
-<h1>Game on</h1>
+<h1>{title}</h1>
 
 <GlobalFlash />
 

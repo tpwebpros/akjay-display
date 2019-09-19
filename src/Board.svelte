@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { gameWinners } from "./utils";
   import Player from "./Player.svelte";
 
   export let client;
@@ -23,27 +24,6 @@
     "mediumpurple",
     "limegreen"
   ];
-
-  function gameWinners(state) {
-    let best = { score: 0, teams: [] };
-
-    for (let p of state.teams) {
-      if (p.score < state.maxScore) {
-        continue;
-      }
-
-      if (p.score > best.score) {
-        best = { score: p.score, teams: [p] };
-        continue;
-      }
-
-      if (p.score === best.score) {
-        best = { score: best.score, teams: [...best.teams, p] };
-      }
-    }
-
-    return best;
-  }
 
   let getGameInstanceUpdate = async gameInstanceId => {
     try {
