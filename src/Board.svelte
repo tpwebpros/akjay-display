@@ -12,7 +12,7 @@
     gameOver: false
   };
 
-  let title = "";
+  let title = "Waiting for game...";
   let subtitle = "";
   let gameId;
 

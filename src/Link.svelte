@@ -1,7 +1,7 @@
 <script>
   import { redirect, pathWithQueryString } from "./router";
   export let page = { params: {}, path: "/", title: "Home" };
-  export let target;
+  export let target = null;
 
   function handleClick(event) {
     redirect(event.target.pathname, event.target.search);

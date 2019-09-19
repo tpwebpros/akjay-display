@@ -3,7 +3,7 @@
   import Score from "./Score.svelte";
   export let avatar;
   export let name;
-  export let score;
+  export let score = null;
   const avatarSize = "2rem";
 </script>
 
