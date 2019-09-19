@@ -3,6 +3,7 @@
   import { slide } from "svelte/transition";
   import { cubicOut } from "svelte/easing";
   import { flashError, flashSuccess } from "./stores";
+  import Link from "./Link.svelte";
   import Team from "./Team.svelte";
 
   export let client;
@@ -13,7 +14,7 @@
   let team = null;
 
   let questions = {};
-  let currentQuestion = undefined;
+  let currentQuestion = null;
 
   // Local key for tracking the current question
   const isCurrent = "isCurrentQuestion";
@@ -44,16 +45,18 @@
     }
   }
 
+  function allFalse(list, property) {
+    const updated = {};
+    for (let [key, value] of Object.entries(list)) {
+      updated[key] = { ...value, [property]: false };
+    }
+    return updated;
+  }
   // Toggle the given property for one item in the list.
   // All other items have the property set to `false`
   function toggleOne(list, id, property) {
     const previousValue = list[id][property];
-    const toggled = {};
-
-    for (let [key, value] of Object.entries(list)) {
-      toggled[key] = { ...value, [property]: false };
-    }
-
+    const toggled = allFalse(list, property);
     toggled[id][property] = previousValue ? false : true;
 
     return toggled;
@@ -62,6 +65,9 @@
   function chooseQuestion(event) {
     const parent = event.target.parentElement;
     const id = parent.dataset["id"];
+    if (questionIsAnswered(questions[id], team)) {
+      return;
+    }
     questions = toggleOne(questions, id, isCurrent);
     currentQuestion = questions[id];
   }
@@ -79,6 +85,8 @@
       });
       if (response.code === "match") {
         $flashSuccess = `Correct! ${response.message || ""}`;
+        currentQuestion = null;
+        allFalse(questions, isCurrent);
         getTeam();
       } else if (response.code === "nomatch") {
         $flashError = "Wrong! Try again.";
@@ -91,6 +99,13 @@
     }
   }
 
+  function questionIsAnswered(question, team) {
+    if (!team || !question) {
+      return false;
+    }
+    return team.answeredQuestions.includes(question.RowKey);
+  }
+
   onMount(() => {
     getQuestions();
     getTeam();
@@ -101,8 +116,15 @@
   .question {
     cursor: pointer;
   }
+
   .current {
     font-weight: bold;
+  }
+
+  .disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    font-weight: normal;
   }
 
   .answer {
@@ -136,15 +158,21 @@
 
 <ol>
   {#each Object.values(questions) as question (question.RowKey)}
-    <li on:click class:current={question[isCurrent]}>
+    <li
+      class:current={question[isCurrent]}
+      class:disabled={questionIsAnswered(question, team)}>
       <div
         class="question"
+        class:disabled={questionIsAnswered(question, team)}
         data-id={question.RowKey}
         on:click|preventDefault={chooseQuestion}>
         <span class="text">
           {@html question.questionText}
         </span>
         <span class="value">({question.value} points)</span>
+        {#if questionIsAnswered(question, team)}
+          <span class="answered ec ec-trophy" />
+        {/if}
       </div>
       {#if question === currentQuestion && currentQuestion[isCurrent]}
         <form
