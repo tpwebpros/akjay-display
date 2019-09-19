@@ -18,6 +18,7 @@
     font-size: 1rem;
     font-weight: 700;
     height: 1.4em;
+    min-width: 2em;
     padding: 0.3em;
     position: relative;
     text-align: center;

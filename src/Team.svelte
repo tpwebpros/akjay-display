@@ -17,7 +17,7 @@
   .name {
     font-size: 1.2rem;
     font-weight: 700;
-    margin-top: 0.4rem;
+    margin: 0.4rem 0 0 0.4rem;
   }
 </style>
 
